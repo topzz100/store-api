@@ -2,7 +2,7 @@ const asyncWrapper = require('../middleware/async-wrapper')
 const Products = require('../db/models/products') 
 
 const getProducts = asyncWrapper(async (req,res) => {
-  const {name, featured, company, sort} = req.query
+  const {name, featured, company, sort, fields} = req.query
   const queryObject = {}
 
   if(name){
@@ -23,7 +23,12 @@ const getProducts = asyncWrapper(async (req,res) => {
     result = result.sort('rating')
   }
 
-  const products =await result
+   if(fields){
+   const fieldsList = fields.split(',').join(' ')
+   result = result.select(fieldsList)  
+  }
+
+  const products = await result
   res.status(200).json({nbHits : products.length, products})
 })
 const getProductsStatic = asyncWrapper(async (req,res) => {
