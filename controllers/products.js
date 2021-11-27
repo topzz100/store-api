@@ -2,7 +2,7 @@ const asyncWrapper = require('../middleware/async-wrapper')
 const Products = require('../db/models/products') 
 
 const getProducts = asyncWrapper(async (req,res) => {
-  const {name, featured, company, sort, fields} = req.query
+  const {name, featured, company, sort, fields, numericFilters} = req.query
   const queryObject = {}
 
   if(name){
@@ -14,8 +14,33 @@ const getProducts = asyncWrapper(async (req,res) => {
   if(company){
     queryObject.company = company
   }
+//numeric filters
+ if (numericFilters) {
+    const operatorMap = {
+      '>': '$gt',
+      '>=': '$gte',
+      '=': '$eq',
+      '<': '$lt',
+      '<=': '$lte',
+    };
+    const regEx = /\b(<|>|>=|=|<|<=)\b/g;
+    let filters = numericFilters.replace(
+      regEx,
+      (match) => `-${operatorMap[match]}-`
+    );
+    const options = ['price', 'rating'];
+    filters = filters.split(',').forEach((item) => {
+      const [field, operator, value] = item.split('-');
+      if (options.includes(field)) {
+        queryObject[field] = { [operator]: Number(value) };
+      }
+    });
+  }
+
   
   let result = Products.find(queryObject)
+
+  //sort
   if(sort){
    const sortList = sort.split(',').join(' ')
    result = result.sort(sortList)  
