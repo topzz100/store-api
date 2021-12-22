@@ -1,5 +1,7 @@
 const express = require('express');
 // require('express-async-errors');
+ const cors = require('cors')
+
 
 const app = express()
 
@@ -13,6 +15,7 @@ const errorHandlerMiddleware = require('./middleware/errorHandler')
 //   res.send('hello world')
 // })
 //routes
+app.use(cors())
 app.use('/api/v1/products', require('./routes/products'))
 
 app.use(notFound)

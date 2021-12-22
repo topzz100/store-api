@@ -61,12 +61,12 @@ const getProducts = asyncWrapper(async (req,res) => {
   const products = await result
   res.status(200).json({nbHits : products.length, products})
 })
-const getProductsStatic = asyncWrapper(async (req,res) => {
- const products = await Products.find()
- res.status(200).json(products)
-})
+// const getProductsStatic = asyncWrapper(async (req,res) => {
+//  const products = await Products.find()
+//  res.status(200).json(products)
+// })
 
 module.exports = {
   getProducts,
-  getProductsStatic
+  // getProductsStatic
 }
